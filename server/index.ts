@@ -19,12 +19,16 @@ async function sendTelegramMessage(chatId: number, text: string, replyMarkup?: o
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) return;
 
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }),
-  });
-  if (!response.ok) console.error("Telegram sendMessage failed", await response.text());
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text, ...(replyMarkup ? { reply_markup: replyMarkup } : {}) }),
+    });
+    if (!response.ok) console.error("Telegram sendMessage failed", await response.text());
+  } catch (error) {
+    console.error("Telegram sendMessage request failed", error);
+  }
 }
 
 const REQUIRED_CHANNELS = ["@janoEarn2", "@janoEarn"];

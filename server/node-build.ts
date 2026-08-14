@@ -31,7 +31,7 @@ app.listen(port, () => {
   const publicUrl = process.env.PUBLIC_APP_URL ?? process.env.MINI_APP_URL;
   if (!token || !publicUrl) return;
 
-  const webhookUrl = `${publicUrl}/api/telegram/webhook`;
+  const webhookUrl = `${publicUrl.replace(/\/+$/, "")}/api/telegram/webhook`;
   const secretToken = process.env.TELEGRAM_WEBHOOK_SECRET;
   void fetch(`https://api.telegram.org/bot${token}/setWebhook`, {
     method: "POST",
