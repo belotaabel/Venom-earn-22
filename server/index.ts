@@ -225,7 +225,7 @@ export function createServer() {
       const displayName = message.from?.username ? `@${message.from.username}` : message.from?.first_name ?? "የTelegram ተጠቃሚ";
       await sendTelegramMessage(
         chatId,
-        isRegistered ? `እንደምን አደርክ ${displayName}!\n\nግብዣ ይጀምሩ፣ 3 ብር በ1 ሰው ያግኙ። አፕህን ክፈት እና ስራህን ቀጥል።` : `እንደምን አደርክ ${displayName}!\n\nግብዣ ይጀምሩ፣ 3 ብር በ1 ሰው ያግኙ። ምዝገባህን ለመጨረስ ኮንታክትህን ላክ።`,
+        isRegistered ? `እንደምን አለህ ${displayName}!\n\nግብዣ ይጀምሩ፣ 3 ብር በ1 ሰው ያግኙ። አፕህን ክፈት እና ስራህን ቀጥል።` : `እንደምን አለህ ${displayName}!\n\nግብዣ ይጀምሩ፣ 3 ብር በ1 ሰው ያግኙ። ምዝገባህን ለመጨረስ ኮንታክትህን ላክ።`,
         {
           keyboard: [
             [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
