@@ -188,8 +188,20 @@ export function createServer() {
     if (callback?.data === "verify_channel" && callback.message?.chat?.id) {
       const token = process.env.TELEGRAM_BOT_TOKEN;
       if (token) await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id, text: "እያረጋገጥን ነው..." }) });
-      if (await isChannelMember(callback.from.id)) await sendContactPrompt(callback.message.chat.id);
-      else await sendJoinRequirement(callback.message.chat.id);
+      if (!(await isChannelMember(callback.from.id))) {
+        await sendJoinRequirement(callback.message.chat.id);
+      } else if (await getDashboard(callback.from.id)) {
+        const miniAppUrl = process.env.MINI_APP_URL ?? process.env.PUBLIC_APP_URL;
+        await sendTelegramMessage(callback.message.chat.id, "እንደገና እንኳን ደህና መጣህ። አፕህን ክፈት እና ስራህን ቀጥል።", {
+          keyboard: [
+            [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
+            [{ text: "ኢንቫይት" }, { text: "ዊዝድሮው" }],
+          ],
+          resize_keyboard: true,
+        });
+      } else {
+        await sendContactPrompt(callback.message.chat.id);
+      }
       return;
     }
     const message = update.message;
@@ -209,14 +221,15 @@ export function createServer() {
         return;
       }
       const miniAppUrl = process.env.MINI_APP_URL ?? process.env.PUBLIC_APP_URL;
+      const isRegistered = Boolean(await getDashboard(telegramId));
       await sendTelegramMessage(
         chatId,
-        "ሰላም! እንኳን ወደ InviteEarn በደህና መጣህ።\n\nኮንታክትህን በመላክ ተመዝገብ፣ ጓደኞችህን ጋብዝ እና በእያንዳንዱ ግብዣ 3 ብር አግኝ።",
+        isRegistered ? "እንደገና እንኳን ደህና መጣህ። አፕህን ክፈት እና ስራህን ቀጥል።" : "ሰላም! እንኳን ወደ InviteEarn በደህና መጣህ።\n\nኮንታክትህን በመላክ ተመዝገብ፣ ጓደኞችህን ጋብዝ እና በእያንዳንዱ ግብዣ 3 ብር አግኝ።",
         {
           keyboard: [
             [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
             [{ text: "ኢንቫይት" }, { text: "ዊዝድሮው" }],
-            [{ text: "ኮንታክቴን አጋራ", request_contact: true }],
+            ...(!isRegistered ? [[{ text: "ኮንታክቴን አጋራ", request_contact: true }]] : []),
           ],
           resize_keyboard: true,
         },
