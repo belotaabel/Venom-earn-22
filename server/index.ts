@@ -317,12 +317,15 @@ export function createServer() {
         await sendJoinRequirement(chatId);
         return;
       }
-      await registerUser({
+      const registration = await registerUser({
         telegramId,
         firstName: message.contact.first_name,
         username: message.from?.username,
         phoneNumber: message.contact.phone_number,
       });
+      if (registration.referrerId) {
+        await sendTelegramMessage(registration.referrerId, "እንኳን ደስ አለዎት! የጋበዙት ሰው ተመዝግቧል። 3 ብር ገቢ ተጨምሯል።");
+      }
       const miniAppUrl = process.env.MINI_APP_URL ?? process.env.PUBLIC_APP_URL;
       await sendTelegramMessage(
         chatId,

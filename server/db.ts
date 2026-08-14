@@ -100,7 +100,20 @@ export async function registerUser(input: { telegramId: number; firstName: strin
     RETURNING telegram_id
   `;
 
-  return users[0];
+  const pending = await sql`
+    DELETE FROM pending_referrals WHERE telegram_id = ${input.telegramId}
+    RETURNING referrer_telegram_id
+  `;
+  const referrerId = pending[0]?.referrer_telegram_id;
+  if (referrerId && referrerId !== input.telegramId) {
+    await sql`
+      INSERT INTO referrals (referrer_telegram_id, referred_telegram_id, referred_name)
+      SELECT ${referrerId}, ${input.telegramId}, first_name FROM users WHERE telegram_id = ${input.telegramId}
+      ON CONFLICT (referred_telegram_id) DO NOTHING
+    `;
+  }
+
+  return { ...users[0], referrerId: referrerId ?? null };
 }
 
 export async function bindDevice(telegramId: number, deviceId: string) {
