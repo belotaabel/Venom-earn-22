@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: inviteearn-dashboard
+    runtime: node
+    plan: free
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /api/ping
+    envVars:
+      - key: NODE_VERSION
+        value: "22.22.0"
+      - key: PING_MESSAGE
+        value: "InviteEarn is running"
+      - key: DATABASE_URL
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_USERNAME
+        sync: false
+      - key: TELEGRAM_CHANNEL_USERNAME
+        sync: false
+      - key: PUBLIC_APP_URL
+        sync: false
+      - key: MINI_APP_URL
+        sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
+      - key: TELEGRAM_ADMIN_CHAT_ID
+        sync: false
+      - key: ADMIN_PANEL_KEY
+        sync: false

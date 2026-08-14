@@ -1,0 +1,46 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;500;600;700;800&display=swap");
+
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@layer base {
+  :root {
+    --background: 144 20% 97%;
+    --foreground: 165 27% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 165 27% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 165 27% 11%;
+    --primary: 163 43% 16%;
+    --primary-foreground: 145 70% 93%;
+    --secondary: 144 35% 92%;
+    --secondary-foreground: 163 43% 16%;
+    --muted: 144 20% 94%;
+    --muted-foreground: 156 10% 47%;
+    --accent: 145 70% 93%;
+    --accent-foreground: 163 43% 16%;
+    --destructive: 7 77% 63%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 144 18% 89%;
+    --input: 144 18% 89%;
+    --ring: 151 70% 42%;
+    --radius: 0.8rem;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 156 10% 32%;
+    --sidebar-primary: 163 43% 16%;
+    --sidebar-primary-foreground: 145 70% 93%;
+    --sidebar-accent: 145 70% 93%;
+    --sidebar-accent-foreground: 163 43% 16%;
+    --sidebar-border: 144 18% 89%;
+    --sidebar-ring: 151 70% 42%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { font-family: "DM Sans", "Noto Sans Ethiopic", sans-serif; }
+  body { @apply bg-background text-foreground; margin: 0; }
+  button, input { font: inherit; }
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) { overflow-wrap: anywhere; word-break: break-word; }
+}
