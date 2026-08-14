@@ -27,24 +27,34 @@ async function sendTelegramMessage(chatId: number, text: string, replyMarkup?: o
   if (!response.ok) console.error("Telegram sendMessage failed", await response.text());
 }
 
-const REQUIRED_CHANNELS = ["janoEarn2", "janoEarn"];
+const REQUIRED_CHANNELS = ["@janoEarn2", "@janoEarn"];
 
 async function isChannelMember(telegramId: number) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) return false;
+
   const memberships = await Promise.all(REQUIRED_CHANNELS.map(async (channel) => {
-    const response = await fetch(`https://api.telegram.org/bot${token}/getChatMember?chat_id=${encodeURIComponent(channel)}&user_id=${telegramId}`);
-    if (!response.ok) return false;
-    const data = (await response.json()) as { ok: boolean; result?: { status: string; is_member?: boolean } };
-    return Boolean(data.ok && data.result && (["creator", "administrator", "member"].includes(data.result.status) || data.result.status === "restricted" && data.result.is_member));
+    try {
+      const response = await fetch(`https://api.telegram.org/bot${token}/getChatMember?chat_id=${encodeURIComponent(channel)}&user_id=${telegramId}`);
+      if (!response.ok) {
+        console.error(`Telegram getChatMember failed for ${channel}`, await response.text());
+        return false;
+      }
+      const data = (await response.json()) as { ok: boolean; result?: { status: string; is_member?: boolean } };
+      return Boolean(data.ok && data.result && (["creator", "administrator", "member"].includes(data.result.status) || data.result.status === "restricted" && data.result.is_member));
+    } catch (error) {
+      console.error(`Telegram getChatMember request failed for ${channel}`, error);
+      return false;
+    }
   }));
+
   return memberships.every(Boolean);
 }
 
 async function sendJoinRequirement(chatId: number) {
   await sendTelegramMessage(chatId, "ለመመዝገብ መጀመሪያ ሁለቱንም InviteEarn ቻናሎች መቀላቀል ግዴታ ነው።\n\nሁለቱንም ከተቀላቀሉ በኋላ ‘አባልነቴን አረጋግጥ’ የሚለውን ይጫኑ።", {
     inline_keyboard: [
-      ...REQUIRED_CHANNELS.map((channel) => [{ text: `${channel} ተቀላቀል`, url: `https://t.me/${channel}` }]),
+      ...REQUIRED_CHANNELS.map((channel) => [{ text: `${channel} ተቀላቀል`, url: `https://t.me/${channel.slice(1)}` }]),
       [{ text: "አባልነቴን አረጋግጥ", callback_data: "verify_channel" }],
     ],
   });
