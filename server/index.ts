@@ -12,7 +12,7 @@ type TelegramMessage = {
 
 type TelegramUpdate = {
   message?: TelegramMessage;
-  callback_query?: { id: string; data?: string; from: { id: number }; message?: { chat?: { id: number } } };
+  callback_query?: { id: string; data?: string; from: { id: number }; message?: { message_id?: number; chat?: { id: number } } };
 };
 
 async function sendTelegramMessage(chatId: number, text: string, replyMarkup?: object) {
@@ -190,7 +190,16 @@ export function createServer() {
       if (token) await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id, text: "እያረጋገጥን ነው..." }) });
       if (!(await isChannelMember(callback.from.id))) {
         await sendJoinRequirement(callback.message.chat.id);
-      } else if (await getDashboard(callback.from.id)) {
+      } else {
+        const token = process.env.TELEGRAM_BOT_TOKEN;
+        if (token && callback.message.message_id) {
+          await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ chat_id: callback.message.chat.id, message_id: callback.message.message_id, reply_markup: { inline_keyboard: [] } }),
+          });
+        }
+        if (await getDashboard(callback.from.id)) {
         const miniAppUrl = process.env.MINI_APP_URL ?? process.env.PUBLIC_APP_URL;
         await sendTelegramMessage(callback.message.chat.id, "እንደገና እንኳን ደህና መጣህ። አፕህን ክፈት እና ስራህን ቀጥል።", {
           keyboard: [
@@ -199,8 +208,9 @@ export function createServer() {
           ],
           resize_keyboard: true,
         });
-      } else {
-        await sendContactPrompt(callback.message.chat.id);
+        } else {
+          await sendContactPrompt(callback.message.chat.id);
+        }
       }
       return;
     }
