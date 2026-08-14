@@ -222,9 +222,10 @@ export function createServer() {
       }
       const miniAppUrl = process.env.MINI_APP_URL ?? process.env.PUBLIC_APP_URL;
       const isRegistered = Boolean(await getDashboard(telegramId));
+      const displayName = message.from?.username ? `@${message.from.username}` : message.from?.first_name ?? "የTelegram ተጠቃሚ";
       await sendTelegramMessage(
         chatId,
-        isRegistered ? "እንደገና እንኳን ደህና መጣህ። አፕህን ክፈት እና ስራህን ቀጥል።" : "ሰላም! እንኳን ወደ InviteEarn በደህና መጣህ።\n\nኮንታክትህን በመላክ ተመዝገብ፣ ጓደኞችህን ጋብዝ እና በእያንዳንዱ ግብዣ 3 ብር አግኝ።",
+        isRegistered ? `እንደምን አደርክ ${displayName}!\n\nግብዣ ይጀምሩ፣ 3 ብር በ1 ሰው ያግኙ። አፕህን ክፈት እና ስራህን ቀጥል።` : `እንደምን አደርክ ${displayName}!\n\nግብዣ ይጀምሩ፣ 3 ብር በ1 ሰው ያግኙ። ምዝገባህን ለመጨረስ ኮንታክትህን ላክ።`,
         {
           keyboard: [
             [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
