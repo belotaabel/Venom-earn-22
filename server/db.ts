@@ -177,7 +177,7 @@ export async function getAdminWithdrawals() {
 export async function updateWithdrawalStatus(id: number, status: "approved" | "rejected") {
   await ensureSchema();
   const sql = database();
-  const rows = await sql`UPDATE withdrawals SET status = ${status} WHERE id = ${id} RETURNING id, status`;
+  const rows = await sql`UPDATE withdrawals SET status = ${status} WHERE id = ${id} RETURNING id, telegram_id AS "telegramId", amount, status`;
   return rows[0];
 }
 

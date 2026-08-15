@@ -195,6 +195,11 @@ export function createServer() {
       const token = process.env.TELEGRAM_BOT_TOKEN;
       if (token) await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id, text: action === "withdraw_approve" ? "ጥያቄው ጸድቋል" : "ጥያቄው ተከልክሏል" }) });
       await sendTelegramMessage(callback.message.chat.id, `Withdrawal #${withdrawal.id} ${withdrawal.status === "approved" ? "ጸድቋል" : "ተከልክሏል"}።`);
+      if (withdrawal.telegramId) {
+        await sendTelegramMessage(Number(withdrawal.telegramId), withdrawal.status === "approved"
+          ? `እንኳን ደስ አለህ! የWithdrawal ጥያቄህ #${withdrawal.id} ጸድቋል።\n\n${Number(withdrawal.amount).toFixed(2)} ብር ወደ Telebirr አካውንትህ ይላካል።`
+          : `የWithdrawal ጥያቄህ #${withdrawal.id} አልጸደቀም።`);
+      }
       return;
     }
     if (callback?.data === "verify_channel" && callback.message?.chat?.id) {
