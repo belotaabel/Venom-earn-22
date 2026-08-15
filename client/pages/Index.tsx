@@ -23,7 +23,7 @@ import {
 
 declare global {
   interface Window {
-    Telegram?: { WebApp?: { initDataUnsafe?: { user?: { id: number } } } };
+    Telegram?: { WebApp?: { ready?: () => void; expand?: () => void; initDataUnsafe?: { user?: { id: number } } } };
   }
 }
 
@@ -61,12 +61,16 @@ export default function Index() {
   const referralPercent = Math.min(Math.round(((dashboard?.referrals.count ?? 0) / 50) * 100), 100);
 
   useEffect(() => {
-    if (!telegramId) return;
+    const webApp = window.Telegram?.WebApp;
+    webApp?.ready?.();
+    webApp?.expand?.();
+    const currentTelegramId = webApp?.initDataUnsafe?.user?.id;
+    if (!currentTelegramId) return;
     const storageKey = "inviteearn-device-id";
     const storedDeviceId = window.localStorage.getItem(storageKey);
     const deviceId = storedDeviceId ?? crypto.randomUUID();
     if (!storedDeviceId) window.localStorage.setItem(storageKey, deviceId);
-    fetch(`/api/dashboard?telegramId=${telegramId}&deviceId=${encodeURIComponent(deviceId)}`)
+    fetch(`/api/dashboard?telegramId=${currentTelegramId}&deviceId=${encodeURIComponent(deviceId)}`)
       .then(async (response) => {
         if (response.ok) return response.json() as Promise<DashboardData>;
         if (response.status === 409) {
@@ -76,7 +80,7 @@ export default function Index() {
         return null;
       })
       .then((data) => setDashboard(data));
-  }, [telegramId]);
+  }, []);
 
   const openWithdrawal = () => {
     setWithdrawalError(dashboard?.referrals.total ? "" : "በቂ ባላንስ የልዎትም");
