@@ -205,6 +205,7 @@ export function createServer() {
           keyboard: [
             [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
             [{ text: "ኢንቫይት" }, { text: "ዊዝድሮው" }],
+            [{ text: "ሂሳብ አሳይ" }],
           ],
           resize_keyboard: true,
         });
@@ -240,6 +241,7 @@ export function createServer() {
           keyboard: [
             [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
             [{ text: "ኢንቫይት" }, { text: "ዊዝድሮው" }],
+            [{ text: "ሂሳብ አሳይ" }],
             ...(!isRegistered ? [[{ text: "ኮንታክቴን አጋራ", request_contact: true }]] : []),
           ],
           resize_keyboard: true,
@@ -257,6 +259,17 @@ export function createServer() {
     if (message.text === "ኢንቫይት") {
       const botUsername = (process.env.TELEGRAM_BOT_USERNAME ?? "@JanoEarn_bot").replace(/^@/, "");
       await sendTelegramMessage(chatId, botUsername ? `የእርስዎ የግብዣ ሊንክ፦\nhttps://t.me/${botUsername}?start=ref_${chatId}\n\nበእያንዳንዱ ግብዣ 3 ብር ያግኙ።` : "የግብዣ ሊንክ ገና አልተዘጋጀም።");
+      return;
+    }
+
+    if (message.text === "ሂሳብ አሳይ") {
+      const telegramId = message.from?.id ?? chatId;
+      const dashboard = await getDashboard(telegramId);
+      if (!dashboard) {
+        await sendTelegramMessage(chatId, "መጀመሪያ ኮንታክትዎን በመላክ ይመዝገቡ።");
+      } else {
+        await sendTelegramMessage(chatId, `የእርስዎ ሂሳብ፦ ${dashboard.referrals.total.toFixed(2)} ብር\n\nየተጋበዙ ሰዎች፦ ${dashboard.referrals.count}`);
+      }
       return;
     }
 
@@ -334,6 +347,7 @@ export function createServer() {
           keyboard: [
             [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
             [{ text: "ኢንቫይት" }, { text: "ዊዝድሮው" }],
+            [{ text: "ሂሳብ አሳይ" }],
           ],
           resize_keyboard: true,
         },
