@@ -133,7 +133,7 @@ export function createServer() {
     const withdrawal = await createWithdrawal({ telegramId, phoneNumber, accountName, amount });
     const adminChatId = Number(process.env.TELEGRAM_ADMIN_CHAT_ID);
     if (Number.isSafeInteger(adminChatId) && adminChatId > 0) {
-      await sendTelegramMessage(adminChatId, `የWithdrawal ጥያቄ #${withdrawal.id}\n\nተጠቃሚ: ${dashboard.user.first_name}\nTelegram ID: ${telegramId}\nTelebirr: ${phoneNumber}\nባለቤት: ${accountName}\nመጠን: ${Number(withdrawal.amount).toFixed(2)} ብር\n\nእባክዎ ይፍቀዱ ወይም ይከልክሉ።`);
+      await sendTelegramMessage(adminChatId, `የWithdrawal ጥያቄ #${withdrawal.id}\n\nተጠቃሚ: ${dashboard.user.first_name}\nTelegram ID: ${telegramId}\nTelebirr: ${phoneNumber}\nባለቤት: ${accountName}\nመጠን: ${Number(withdrawal.amount).toFixed(2)} ብር\n\nእባክዎ ይፍቀዱ ወይም ይከልክሉ።`, { inline_keyboard: [[{ text: "አጽድቅ", callback_data: `withdraw_approve:${withdrawal.id}` }, { text: "ከልክል", callback_data: `withdraw_reject:${withdrawal.id}` }]] });
     }
     res.status(201).json({ id: withdrawal.id, status: withdrawal.status });
   });
@@ -185,6 +185,18 @@ export function createServer() {
     res.sendStatus(200);
     const update = req.body as TelegramUpdate;
     const callback = update.callback_query;
+    if ((callback?.data?.startsWith("withdraw_approve:") || callback?.data?.startsWith("withdraw_reject:")) && callback.message?.chat?.id) {
+      const adminChatId = Number(process.env.TELEGRAM_ADMIN_CHAT_ID);
+      if (callback.from.id !== adminChatId) return;
+      const [action, idText] = callback.data.split(":");
+      const withdrawalId = Number(idText);
+      if (!Number.isSafeInteger(withdrawalId) || !["withdraw_approve", "withdraw_reject"].includes(action)) return;
+      const withdrawal = await updateWithdrawalStatus(withdrawalId, action === "withdraw_approve" ? "approved" : "rejected");
+      const token = process.env.TELEGRAM_BOT_TOKEN;
+      if (token) await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id, text: action === "withdraw_approve" ? "ጥያቄው ጸድቋል" : "ጥያቄው ተከልክሏል" }) });
+      await sendTelegramMessage(callback.message.chat.id, `Withdrawal #${withdrawal.id} ${withdrawal.status === "approved" ? "ጸድቋል" : "ተከልክሏል"}።`);
+      return;
+    }
     if (callback?.data === "verify_channel" && callback.message?.chat?.id) {
       const token = process.env.TELEGRAM_BOT_TOKEN;
       if (token) await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id, text: "እያረጋገጥን ነው..." }) });
@@ -317,7 +329,7 @@ export function createServer() {
         await clearWithdrawalSession(telegramId);
         const adminChatId = Number(process.env.TELEGRAM_ADMIN_CHAT_ID);
         if (Number.isSafeInteger(adminChatId) && adminChatId > 0) {
-          await sendTelegramMessage(adminChatId, `የWithdrawal ጥያቄ #${withdrawal.id}\n\nተጠቃሚ: ${dashboard.user.first_name}\nTelegram ID: ${telegramId}\nTelebirr: ${session.phoneNumber}\nባለቤት: ${session.accountName}\nመጠን: ${Number(withdrawal.amount).toFixed(2)} ብር`);
+          await sendTelegramMessage(adminChatId, `የWithdrawal ጥያቄ #${withdrawal.id}\n\nተጠቃሚ: ${dashboard.user.first_name}\nTelegram ID: ${telegramId}\nTelebirr: ${session.phoneNumber}\nባለቤት: ${session.accountName}\nመጠን: ${Number(withdrawal.amount).toFixed(2)} ብር`, { inline_keyboard: [[{ text: "አጽድቅ", callback_data: `withdraw_approve:${withdrawal.id}` }, { text: "ከልክል", callback_data: `withdraw_reject:${withdrawal.id}` }]] });
         }
         await sendTelegramMessage(chatId, "ጥያቄዎ ወደአድሚን ተልኳል። በቅርቡ ወደቴሌብርዎ ገቢ ይደረጋል።");
         return;
