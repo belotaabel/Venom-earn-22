@@ -174,6 +174,19 @@ export async function getAdminWithdrawals() {
   `;
 }
 
+export async function getAdminUsers() {
+  await ensureSchema();
+  const sql = database();
+  return sql`
+    SELECT u.telegram_id AS "telegramId", u.first_name AS "firstName", u.username, u.phone_number AS "phoneNumber",
+      COALESCE((SELECT SUM(r.reward) FROM referrals r WHERE r.referrer_telegram_id = u.telegram_id), 0)::numeric AS balance,
+      (SELECT COUNT(*) FROM referrals r WHERE r.referrer_telegram_id = u.telegram_id)::int AS "referralCount",
+      (SELECT COUNT(*) FROM withdrawals w WHERE w.telegram_id = u.telegram_id)::int AS "withdrawalCount",
+      TO_CHAR(u.created_at AT TIME ZONE 'Africa/Addis_Ababa', 'YYYY-MM-DD HH24:MI') AS "createdAt"
+    FROM users u ORDER BY u.created_at DESC
+  `;
+}
+
 export async function updateWithdrawalStatus(id: number, status: "approved" | "rejected") {
   await ensureSchema();
   const sql = database();

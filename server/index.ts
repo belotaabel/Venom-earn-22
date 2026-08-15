@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import { bindDevice, clearWithdrawalSession, createWithdrawal, getAdminWithdrawals, getDashboard, getMinimumWithdrawal, getWithdrawalSession, registerUser, savePendingReferral, saveWithdrawalSession, setMinimumWithdrawal, updateWithdrawalStatus } from "./db";
+import { bindDevice, clearWithdrawalSession, createWithdrawal, getAdminUsers, getAdminWithdrawals, getDashboard, getMinimumWithdrawal, getWithdrawalSession, registerUser, savePendingReferral, saveWithdrawalSession, setMinimumWithdrawal, updateWithdrawalStatus } from "./db";
 
 type TelegramMessage = {
   chat?: { id: number };
@@ -143,7 +143,7 @@ export function createServer() {
       res.sendStatus(401);
       return;
     }
-    res.json({ withdrawals: await getAdminWithdrawals(), minimumWithdrawal: await getMinimumWithdrawal() });
+    res.json({ withdrawals: await getAdminWithdrawals(), users: await getAdminUsers(), minimumWithdrawal: await getMinimumWithdrawal() });
   });
 
   app.put("/api/admin/settings/minimum-withdrawal", async (req, res) => {
