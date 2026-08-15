@@ -57,7 +57,7 @@ export default function Index() {
   const [withdrawalError, setWithdrawalError] = useState("");
   const [withdrawalSubmitted, setWithdrawalSubmitted] = useState(false);
   const telegramId = typeof window !== "undefined" ? window.Telegram?.WebApp?.initDataUnsafe?.user?.id : undefined;
-  const referralLink = dashboard?.referralLink ?? "";
+  const referralLink = dashboard?.referralLink ?? (telegramId ? `https://t.me/JanoEarn_bot?start=ref_${telegramId}` : "");
   const referralPercent = Math.min(Math.round(((dashboard?.referrals.count ?? 0) / 50) * 100), 100);
 
   useEffect(() => {
