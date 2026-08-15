@@ -197,7 +197,7 @@ export function createServer() {
       await sendTelegramMessage(callback.message.chat.id, `Withdrawal #${withdrawal.id} ${withdrawal.status === "approved" ? "ጸድቋል" : "ተከልክሏል"}።`);
       if (withdrawal.telegramId) {
         await sendTelegramMessage(Number(withdrawal.telegramId), withdrawal.status === "approved"
-          ? `እንኳን ደስ አለህ! የWithdrawal ጥያቄህ #${withdrawal.id} ጸድቋል።\n\n${Number(withdrawal.amount).toFixed(2)} ብር ወደ Telebirr አካውንትህ ይላካል።`
+          ? `እንኳን ደስ አለህ! የWithdrawal ጥያቄህ #${withdrawal.id} ጸድቋል።\n\n${Number(withdrawal.amount).toFixed(2)} ብር ወደ Telebirr አካውንትህ ተልኳል።`
           : `የWithdrawal ጥያቄህ #${withdrawal.id} አልጸደቀም።`);
       }
       return;
