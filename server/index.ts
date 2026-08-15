@@ -217,10 +217,10 @@ export function createServer() {
           });
         }
         if (await getDashboard(callback.from.id)) {
-        const miniAppUrl = process.env.MINI_APP_URL ?? "https://inviteearn-dashboard-i0lm.onrender.com";
+
         await sendTelegramMessage(callback.message.chat.id, "እንደገና እንኳን ደህና መጣህ። አፕህን ክፈት እና ስራህን ቀጥል።", {
           keyboard: [
-            [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
+
             [{ text: "ኢንቫይት" }, { text: "ዊዝድሮው" }],
             [{ text: "ሂሳብ አሳይ" }],
           ],
@@ -256,7 +256,7 @@ export function createServer() {
         isRegistered ? `እንደምን አለህ ${displayName}!\n\nግብዣ ይጀምሩ፣ 3 ብር በ1 ሰው ያግኙ። አፕህን ክፈት እና ስራህን ቀጥል።` : `እንደምን አለህ ${displayName}!\n\nግብዣ ይጀምሩ፣ 3 ብር በ1 ሰው ያግኙ። ምዝገባህን ለመጨረስ ኮንታክትህን ላክ።`,
         {
           keyboard: [
-            [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
+
             [{ text: "ኢንቫይት" }, { text: "ዊዝድሮው" }],
             [{ text: "ሂሳብ አሳይ" }],
             ...(!isRegistered ? [[{ text: "ኮንታክቴን አጋራ", request_contact: true }]] : []),
@@ -362,7 +362,7 @@ export function createServer() {
         `እንኳን ደህና መጣህ ${message.contact.first_name}! ምዝገባህ ተሳክቷል።\n\nአሁን የግብዣ ሊንክህን ተጠቅመህ ጓደኞችህን ጋብዝ። ለእያንዳንዱ ሰው 3 ብር ታገኛለህ።`,
         {
           keyboard: [
-            [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
+
             [{ text: "ኢንቫይት" }, { text: "ዊዝድሮው" }],
             [{ text: "ሂሳብ አሳይ" }],
           ],
