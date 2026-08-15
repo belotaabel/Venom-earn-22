@@ -28,7 +28,7 @@ app.listen(port, () => {
   console.log(`🔧 API: http://localhost:${port}/api`);
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const publicUrl = process.env.PUBLIC_APP_URL ?? process.env.MINI_APP_URL;
+  const publicUrl = process.env.PUBLIC_APP_URL ?? process.env.MINI_APP_URL ?? "https://inviteearn-dashboard-i0lm.onrender.com";
   if (!token || !publicUrl) return;
 
   const webhookUrl = `${publicUrl.replace(/\/+$/, "")}/api/telegram/webhook`;

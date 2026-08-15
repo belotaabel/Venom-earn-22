@@ -200,7 +200,7 @@ export function createServer() {
           });
         }
         if (await getDashboard(callback.from.id)) {
-        const miniAppUrl = process.env.MINI_APP_URL ?? process.env.PUBLIC_APP_URL;
+        const miniAppUrl = process.env.MINI_APP_URL ?? "https://inviteearn-dashboard-i0lm.onrender.com";
         await sendTelegramMessage(callback.message.chat.id, "እንደገና እንኳን ደህና መጣህ። አፕህን ክፈት እና ስራህን ቀጥል።", {
           keyboard: [
             [miniAppUrl ? { text: "Open App", web_app: { url: miniAppUrl } } : { text: "Open App" }],
@@ -231,7 +231,7 @@ export function createServer() {
         await sendJoinRequirement(chatId);
         return;
       }
-      const miniAppUrl = process.env.MINI_APP_URL ?? process.env.PUBLIC_APP_URL;
+      const miniAppUrl = process.env.MINI_APP_URL ?? "https://inviteearn-dashboard-i0lm.onrender.com";
       const isRegistered = Boolean(await getDashboard(telegramId));
       const displayName = message.from?.username ? `@${message.from.username}` : message.from?.first_name ?? "የTelegram ተጠቃሚ";
       await sendTelegramMessage(
@@ -251,7 +251,7 @@ export function createServer() {
     }
 
     if (message.text === "Open App") {
-      const miniAppUrl = process.env.MINI_APP_URL ?? process.env.PUBLIC_APP_URL;
+      const miniAppUrl = process.env.MINI_APP_URL ?? "https://inviteearn-dashboard-i0lm.onrender.com";
       await sendTelegramMessage(chatId, miniAppUrl ? `Mini App ክፈት፦ ${miniAppUrl}` : "Mini App አሁን አልተዘጋጀም።");
       return;
     }
@@ -339,7 +339,7 @@ export function createServer() {
       if (registration.referrerId) {
         await sendTelegramMessage(registration.referrerId, "እንኳን ደስ አለዎት! የጋበዙት ሰው ተመዝግቧል። 3 ብር ገቢ ተጨምሯል።");
       }
-      const miniAppUrl = process.env.MINI_APP_URL ?? process.env.PUBLIC_APP_URL;
+      const miniAppUrl = process.env.MINI_APP_URL ?? "https://inviteearn-dashboard-i0lm.onrender.com";
       await sendTelegramMessage(
         chatId,
         `እንኳን ደህና መጣህ ${message.contact.first_name}! ምዝገባህ ተሳክቷል።\n\nአሁን የግብዣ ሊንክህን ተጠቅመህ ጓደኞችህን ጋብዝ። ለእያንዳንዱ ሰው 3 ብር ታገኛለህ።`,
