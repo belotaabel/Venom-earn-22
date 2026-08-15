@@ -111,7 +111,7 @@ export function createServer() {
       res.status(404).json({ error: "User is not registered" });
       return;
     }
-    const botUsername = process.env.TELEGRAM_BOT_USERNAME?.replace(/^@/, "");
+    const botUsername = (process.env.TELEGRAM_BOT_USERNAME ?? "@JanoEarn_bot").replace(/^@/, "");
     res.json({ ...dashboard, referralLink: botUsername ? `https://t.me/${botUsername}?start=ref_${telegramId}` : null });
   });
 
@@ -255,7 +255,7 @@ export function createServer() {
     }
 
     if (message.text === "ኢንቫይት") {
-      const botUsername = process.env.TELEGRAM_BOT_USERNAME?.replace(/^@/, "");
+      const botUsername = (process.env.TELEGRAM_BOT_USERNAME ?? "@JanoEarn_bot").replace(/^@/, "");
       await sendTelegramMessage(chatId, botUsername ? `የእርስዎ የግብዣ ሊንክ፦\nhttps://t.me/${botUsername}?start=ref_${chatId}\n\nበእያንዳንዱ ግብዣ 3 ብር ያግኙ።` : "የግብዣ ሊንክ ገና አልተዘጋጀም።");
       return;
     }
